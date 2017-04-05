@@ -1,0 +1,237 @@
+\documentclass[a4paper,twosides,CJK,12pt]{cctart}
+\usepackage{indentfirst}            %首行缩进
+\usepackage{setspace}               %正文行距宏包
+\usepackage{paralist}               %压缩列表及行间列表宏包
+\usepackage{fancyvrb}               %原文打印修饰
+\usepackage{fancybox}               %盒子修饰
+\usepackage{balance}                %分栏左右两栏均衡
+\usepackage{CCT}                    %latex中文解决方案
+
+
+\setlength{\parindent}{2em}        %首行缩进距离  未起作用????????
+\addtolength{\parskip}{3pt}        %段落之间的距离
+\setstretch{1.2}                   %正文行距均为1.2倍行距 在这里全部变成了1.2倍行距是不是命令行放置的问题？？？？？？？
+
+\renewcommand{\thefootnote}{\arabic{footnote}}    %脚注样式 \arabic阿拉伯数字 \alph 小写英文字母 \roman 小写罗马数字 \Roman 大写罗马数字
+\newcommand{\ud}{\mathrm{d}}                      %微分符号
+
+
+
+
+\usepackage{amsmath}
+\usepackage{cases}
+\headsep 0.5 true cm \topmargin 0pt \oddsidemargin 0pt
+\evensidemargin 0pt \textheight 225mm \textwidth 165mm
+\usepackage{pifont}
+\usepackage{mathrsfs}
+\usepackage{slashbox}
+\usepackage{amsfonts}
+\usepackage[T1]{fontenc}
+\usepackage{ae}
+\usepackage{fancyhdr}
+
+\usepackage{color}
+\usepackage{picins}
+\usepackage{wrapfig}
+\usepackage{graphicx}
+\usepackage{amssymb,amsmath,amsfonts,amsthm}
+\usepackage{epsfig,longtable}
+\usepackage[tight,hang]{subfigure}
+\usepackage{graphics}
+\usepackage{bbding}
+
+
+\numberwithin{equation}{section}
+\numberwithin{figure}{section}
+\numberwithin{table}{section}
+
+
+\title{滤波器设计}
+\author{王柯}
+%\date{}                       %去除maketitle的自动时间标志
+
+
+\begin{document}
+
+%\twocolumn                  %页面分栏
+%\setlength\columnsep{20pt}
+%\balance                    %左右两栏页面均衡
+
+
+\maketitle
+\begin{spacing}{1.5}        %1.5倍行间距
+
+
+%\begin{center}             %题目单独写
+%\textbf{\sanhao 题目}
+%\end{center}
+
+%\newpage                     %翻页
+
+%\begin{abstract}
+%摘要
+%\end{abstract}
+%\textbf{【关键词】:}
+
+\section{模拟滤波器}
+\subsection{LCL滤波器设计}
+\subsubsection{基本特性}
+传统滤波器大多数为型滤波器。L型滤波器结构简单，控制方案较为成熟，但因为
+其在传递函数上表现为一阶形式，对高频干扰的抑制性能较差，一般需要用较大
+的电感量来加强对开关频率处纹波的衰减，大大增加了系统体积和成本。相对
+L型滤波器，LCL型滤波器有较好的高频滤波特性，能够以较小的感量获得同样
+的衰减强度。但LCL滤波器特性比较复杂，由于谐振尖峰的存在，系统容易不
+稳定[庞晋永. 光伏并网逆变器的建模与控制器设计[D].浙江大学,2014.]。
+
+LCL滤波器结构如图\ref{f1}所示：
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=0.5\textwidth]{LCL.jpg}
+  \caption{LCL滤波器结构}\label{f1}
+\end{figure}
+如果忽略寄生电感可得其网侧电流的传递函数为
+\begin{equation}
+\frac{i_g}{u_i}=\frac{1}{L_iL_gCs^3+(L_i+L_g)s}
+\end{equation}
+L型和LCL型滤波器的伯德图为
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=0.5\textwidth]{LCLbode.jpg}
+  \caption{L型和LCL滤波器传递函数伯德图}\label{f1}
+\end{figure}
+LCL滤波器在低频段特性类似于L型滤波器，在高频段则有着
+倍频）的衰减，对高频纹波的抑制作用更强。但LCL滤波器存在谐振尖峰，在
+该处有着很大的幅值增益并且带来180度的相移，这会造成系统的不稳定。
+
+\subsubsection{参数设计}
+1.总电感
+
+在低频段可以看作一个L型滤波器，考虑到滤波器阻抗上的压降，总电感不应该过大，在额定工作时电感对电网的分压不应小于电网电压的10\%,
+\begin{equation}
+  \omega LI<10\%U
+\end{equation}
+其中$\omega_g$为电网频率，$I$、$U$为额定并网电流幅值及额定电网电压幅值。
+
+2.逆变侧电感设计
+
+逆变侧电流纹波太大会增加开关管上的损耗，并且增加开关管的应力。要求逆变器侧 电流纹波小于并网额定电路的20\%,即
+\begin{equation}
+  |i_i(h_{sw})|\approx \frac{V_{in}}{7L_if_s}<20\%I
+\end{equation}
+其中$i_i(h_{sw}$为逆变器侧的开关纹波电流，$f_s$为开关管的开关频率
+
+3.滤波电容的选择
+要求无功功率小于额定功率的5\%,即
+\begin{equation}
+  3\omega_gCu^2<5\%P
+\end{equation}
+其中$P$为三相逆变器的额定功率，$u$为电网电压。
+
+4.网侧电感的选择
+令网侧电感$L_g=rL_i$，则
+\begin{equation}
+  \frac{i_g(H_{sw})}{i_i(h_{sw})}=\frac{1}{|1+r(1-\omega_s^2L_iC)|}
+\end{equation}
+$r$越大对纹波的衰减越好，但也会增大滤波器的体积，同时还要考虑LCL的谐振频率，有
+\begin{equation}
+  \omega_{res}=\sqrt{\frac{L_i+L_g}{L_iL_gC}}
+\end{equation}
+为保证电流质量，应是谐振峰值远离低频段，一般取$]\omega_{res}>\omega_g$，同时谐振频率不能过于靠近开关频率$\omega_{res}<\omega_{sw}$
+
+5.无源阻尼的选择
+在使用无源阻尼方案进行网侧电流单环控制的时候，使用电容上串电阻的方法所需要的电阻最小，产生更小的阻尼损耗。加入无源阻尼抵消谐振峰值，只考虑电容寄生电阻的时候，传递函数为
+\begin{equation}
+  \frac{i_g(s)}{u_i(s)}=\frac{1+sCR_c}{L_il_gCs^3+R_cC(L_i+L_g)s^2+(L_i+L_g)s}
+\end{equation}
+电阻损耗不能太大，一般有
+\begin{equation}
+  R_c<\frac{1}{3\omega_{res}C}
+\end{equation}
+
+\section{数字滤波器}
+
+
+\section{公式}
+
+
+统一编号
+\begin{equation}
+  \begin{split}
+    L\frac{\ud i_L}{\ud t}&=v_i   \\
+    C\frac{\ud u_c}{\ud t}&=-\frac{u_c}{R}   \\
+    v_o&=u_c
+  \end{split}
+\end{equation}
+单独编号
+\begin{align}
+I_D&=I_0(exp\frac{qU_d}{AkT}-1)  \\
+I_L&=I_{ph}-I_D-\frac{U_D}{R_{sh}}  \\
+&=I_{ph}-I_0[exp\frac{q(U_{oc}+I_LR_s)}{AkT}-1]-\frac{U_D}{R_{sh}} \\
+I_{sc}&=I_0(exp\frac{qU_{oc}}{AkT}-1)   \\
+U_{oc}&=\frac{AkT}{q}\ln(\frac{I_{sc}}{I_0}+1)
+\end{align}
+
+行间公式
+$\displaystyle I_0$
+
+矩阵
+\begin{equation}
+\left[
+\begin{matrix}
+\dot{i_L}\\
+\dot{u_c}\\
+\end{matrix}
+\right]=
+\left[\begin{matrix}
+0&0\\
+0& -\frac{1}{RC}  \\
+\end{matrix}\right]v_i
+\end{equation}
+
+\section{图片}
+如图\ref{f1}所示
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=0.5\textwidth]{LCL.jpg}
+  \caption{model}\label{ff}
+\end{figure}
+
+
+
+
+\section{表格}
+如表\ref{T1}所示
+\begin{table}[!htp]
+  \centering
+  \caption{表格}\label{T1}
+  \begin{tabular}{l|c}
+    \hline
+    参数 & $v_0$  \\
+    \hline
+    原值 & 0m/s   \\
+    \hline
+  \end{tabular}  \
+\end{table}
+
+
+\section{参考文献}
+
+\begin{thebibliography}{90}
+{
+\bibitem{} 张洪华①②, 梁俊①, 黄翔宇①②*, 赵宇①, 王立①②, 关轶峰①②, 程铭①, 李骥①②,
+王鹏基①②, 于洁①, 袁利①, 嫦娥三号自主避障软着陆控制技术,{\it 中国科学: 技术科学}  ({\bf2014 年第 44 卷第 6 期: 559 ~ 568})
+}
+\end{thebibliography}
+
+
+
+\section{附录}
+代码
+\begin{verbatim}
+    C程序
+\end{verbatim}
+
+
+
+\end{spacing}
+\end{document}
